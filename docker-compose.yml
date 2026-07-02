@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  routezero:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python benchmark.py

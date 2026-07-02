@@ -1,0 +1,5 @@
+routellm[serving]
+chromadb
+sentence-transformers
+openai
+python-dotenv
