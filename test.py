@@ -1,7 +1,7 @@
 from routellm.controller import Controller
 
 controller = Controller(
-    routers=["causal_llm"],
+    routers=["bert"],
     weak_model="gpt-3.5-turbo",
     strong_model="gpt-4",
 )
@@ -22,5 +22,5 @@ test_prompts = [
 ]
 
 for label, prompt in test_prompts:
-    score = controller.routers["causal_llm"].calculate_strong_win_rate(prompt)
+    score = controller.routers["bert"].calculate_strong_win_rate(prompt)
     print(f"{label}: {score:.4f} — {prompt[:50]}...")
