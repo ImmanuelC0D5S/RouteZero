@@ -1,9 +1,18 @@
 version: '3.8'
+
 services:
-  routezero:
+  routezero-app:
     build: .
+    ports:
+      - "8000:8000"
     volumes:
-      - .:/app
+      - ./input:/input
+      - ./output:/output
+      - ./.chromadb:/.chromadb
+      - ./metrics.db:/app/metrics.db
+    env_file:
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
-    command: python benchmark.py
+    command: >
+      sh -c "uvicorn app:app --host 0.0.0.0 --port 8000"

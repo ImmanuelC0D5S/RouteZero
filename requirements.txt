@@ -1,5 +1,27 @@
-routellm[serving]
-chromadb
-sentence-transformers
-openai
-python-dotenv
+# Core dependencies
+python-dotenv>=1.0.0
+pydantic-settings>=2.0.0
+pydantic>=2.0.0
+
+# API / Server
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+
+# LLM Clients
+openai>=1.0.0
+
+# Semantic Cache
+chromadb>=0.5.0
+sentence-transformers>=2.2.0
+
+# Pipeline orchestration
+langgraph>=0.2.0
+
+# Streamlit dashboard
+streamlit>=1.30.0
+
+# Async SQLite
+aiosqlite>=0.20.0
+
+# Utilities
+numpy>=1.24.0
