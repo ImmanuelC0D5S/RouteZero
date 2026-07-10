@@ -113,7 +113,7 @@ CATEGORIES = list(EXAMPLES.keys())
 # ---------------------------------------------------------------------------
 
 class CategoryRouter:
-    def __init__(self, n_neighbors: int = 3, model_name: str = "all-MiniLM-L6-v2"):
+    def __init__(self, n_neighbors: int = 5, model_name: str = "./model_cache/all-MiniLM-L6-v2"):
         print(f"Loading embedding model '{model_name}'...")
         self.model = SentenceTransformer(model_name)
 
@@ -159,11 +159,19 @@ def regex_override(prompt: str):
     return None
 
 
+CONFIDENCE_THRESHOLD = 0.6  # fraction of k nearest neighbors that must agree
+
 def classify_with_fallback(router: "CategoryRouter", prompt: str):
     override = regex_override(prompt)
     if override:
         return override, "regex_override"
-    return router.classify(prompt), "knn"
+
+    pred, confidence = router.classify(prompt, return_confidence=True)
+
+    if confidence < CONFIDENCE_THRESHOLD:
+        return "factual", "low_confidence_fallback"
+
+    return pred, "knn"
 
 
 # ---------------------------------------------------------------------------
@@ -187,7 +195,7 @@ MODEL_TIER = {
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    router = CategoryRouter(n_neighbors=3)
+    router = CategoryRouter(n_neighbors=5)
 
     # Held-out test prompts (NOT in the training examples, deliberately
     # phrased differently to check generalization to "unseen variants")
