@@ -1,0 +1,8 @@
+routellm-env/
+__pycache__/
+*.pyc
+.git/
+.env
+dev_tools/
+tests/
+docs/

@@ -24,12 +24,11 @@ class TaskType(Enum):
     REASONING = "reasoning"
     CODEGEN = "codegen"
 
-
 class Settings(BaseSettings):
     # Cache
     cache_similarity_threshold: float = 0.92
     chromadb_path: str = ".chromadb"
-    embedding_model: str = "all-MiniLM-L6-v2"
+    embedding_model: str = os.environ.get("EMBEDDING_MODEL_PATH", "./model_cache/all-MiniLM-L6-v2")
 
     # Router — Semantic + Heuristic
     router_local_threshold: float = 0.4
@@ -43,6 +42,8 @@ class Settings(BaseSettings):
 
     # Remote model (Fireworks AI)
     fireworks_api_key: str = ""
+    fireworks_base_url: str = "https://api.fireworks.ai/inference/v1"
+    allowed_models: str = ""  # comma-separated, read from ALLOWED_MODELS env var
     fireworks_model_id: str = "accounts/fireworks/models/llama-v3p1-405b-instruct"
     remote_timeout_s: float = 60.0
 
@@ -55,7 +56,7 @@ class Settings(BaseSettings):
     # HuggingFace
     hf_token: str = ""
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
 
 
 @functools.lru_cache()
