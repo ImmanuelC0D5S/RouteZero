@@ -98,15 +98,10 @@ class RouteZeroPipeline:
     # ── Node methods ─────────────────────────────────────────────────────
     
     async def _node_check_cache(self, state: PipelineState) -> dict:
-        prompt = state["user_prompt"]
-        result = self.cache.query(prompt)  # type: ignore[union-attr]
-        if result is not None:
-            return {
-                "cache_hit": True,
-                "model_response": result.response,
-                "task_type": result.task_type,
-                "routing_target": "cache",
-            }
+        """
+        COMPLIANCE FIX: Caching/Storing responses is forbidden in scoring.
+        Bypassing lookup to ensure 100% fresh inference.
+        """
         return {"cache_hit": False}
     
     async def _node_route_decision(self, state: PipelineState) -> dict:
@@ -118,6 +113,7 @@ class RouteZeroPipeline:
     
     async def _node_call_local(self, state: PipelineState) -> dict:
         start = time.monotonic()
+        # NOTE: With our llm_clients.py fix, this calls the FAST Fireworks model
         response = await asyncio.wait_for(
             self.local_client.generate(state["user_prompt"]),  # type: ignore[union-attr]
             timeout=self.settings.local_timeout_s,
@@ -130,6 +126,7 @@ class RouteZeroPipeline:
     
     async def _node_call_remote(self, state: PipelineState) -> dict:
         start = time.monotonic()
+        # NOTE: With our llm_clients.py fix, this calls the STRONG Fireworks model
         response = await self.remote_client.generate(state["user_prompt"])  # type: ignore[union-attr]
         latency = (time.monotonic() - start) * 1000
         return {
@@ -146,7 +143,7 @@ class RouteZeroPipeline:
     async def _node_finalize(self, state: PipelineState) -> dict:
         record = RequestLogRecord(
             request_id=state.get("conversation_id", ""),
-            cache_status="HIT" if state["cache_hit"] else "MISS",
+            cache_status="MISS",
             selected_route=state["routing_target"].upper(),
             task_type=state["task_type"],
             saved_tokens=0,
@@ -156,14 +153,16 @@ class RouteZeroPipeline:
         )
         await self.metrics.log_request(record)
 
-        # Populate cache on cache miss for future lookups
-        if not state["cache_hit"] and state.get("model_response"):
-            await asyncio.to_thread(
-                self.cache.insert,
-                state["user_prompt"],
-                state["model_response"],
-                {"task_type": state["task_type"]},
-            )
+        # COMPLIANCE & RAM FIX: Storing responses is strictly forbidden and 
+        # consumes excessive memory in a 4GB environment.
+        
+        # if not state["cache_hit"] and state.get("model_response"):
+        #     await asyncio.to_thread(
+        #         self.cache.insert,
+        #         state["user_prompt"],
+        #         state["model_response"],
+        #         {"task_type": state["task_type"]},
+        #     )
 
         return {}
     
