@@ -1,0 +1,5 @@
+[
+  {"task_id": "001", "prompt": "What is the capital of France?"},
+  {"task_id": "002", "prompt": "Explain what a neural network is in one sentence."},
+  {"task_id": "003", "prompt": "Write a Python function to compute fibonacci numbers."}
+]

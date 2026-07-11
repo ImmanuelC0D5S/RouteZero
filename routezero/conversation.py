@@ -13,6 +13,8 @@ class PipelineState(TypedDict):
     model_response: str
     verification_passed: bool
     execution_latency_ms: float
+    tokens_used: int
+    model_name: str
     conversation_id: str
     turn_index: int
 

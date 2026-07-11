@@ -1,6 +1,7 @@
 from __future__ import annotations
 import asyncio
 import logging
+import os
 import time
 from dataclasses import dataclass
 from typing import Protocol
@@ -24,48 +25,53 @@ class LLMResponse:
 
 
 class LocalQwenClient:
-    """Client for local Qwen 3.x MoE running on ROCm via vLLM."""
-    
+    """Client for local Qwen2.5 GGUF model running via llama.cpp on CPU."""
+
     def __init__(self, settings: Settings) -> None:
-        self.model = settings.local_model_name
+        self.model_path = settings.local_model_path
         self.max_tokens = settings.local_max_tokens
-        self.timeout = settings.local_timeout_s
-        self._client = AsyncOpenAI(
-            base_url=settings.local_model_endpoint,
-            api_key="not-needed",
+        # lazy import so the module can be imported without llama-cpp-python
+        from llama_cpp import Llama
+        self._model = Llama(
+            model_path=self.model_path,
+            n_ctx=32768,
+            n_threads=None,           # auto-detect CPU cores
+            verbose=False,
         )
-    
+
     async def generate(self, prompt: str, **kwargs) -> LLMResponse:
         start = time.monotonic()
-        response = await self._client.chat.completions.create(
-            model=self.model,
+
+        response: dict = await asyncio.to_thread(
+            self._model.create_chat_completion,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=self.max_tokens,
-            timeout=self.timeout,
             **kwargs,
         )
         latency_ms = (time.monotonic() - start) * 1000
 
         logging.debug("RAW LOCAL RESPONSE: %s", response)
 
-        if not response.choices:
+        choices = response.get("choices", [])
+        if not choices:
             raise RuntimeError(
                 f"Local model returned no choices. Full response: {response}"
             )
 
-        choice = response.choices[0]
-        usage = response.usage
+        choice = choices[0]
+        message = choice.get("message", {})
+        usage = response.get("usage", {})
         return LLMResponse(
-            text=choice.message.content or "",
-            tokens_used=usage.total_tokens if usage else 0,
+            text=message.get("content") or "",
+            tokens_used=usage.get("total_tokens", 0),
             latency_ms=round(latency_ms, 2),
-            model_name=self.model,
+            model_name=self.model_path,
         )
-    
+
     async def health_check(self) -> bool:
         try:
-            await self._client.chat.completions.create(
-                model=self.model,
+            await asyncio.to_thread(
+                self._model.create_chat_completion,
                 messages=[{"role": "user", "content": "ping"}],
                 max_tokens=1,
             )
@@ -75,14 +81,26 @@ class LocalQwenClient:
 
 
 class FireworksRemoteClient:
-    """Client for Fireworks AI remote API."""
+    """Client for Fireworks AI remote API.
+    
+    Reads configuration from environment variables at runtime:
+      - FIREWORKS_BASE_URL   (default: https://api.fireworks.ai/inference/v1)
+      - FIREWORKS_API_KEY    (required)
+      - ALLOWED_MODELS       (comma-separated, first value is the model ID)
+    """
     
     def __init__(self, settings: Settings) -> None:
-        self.model = settings.fireworks_model_id
         self.timeout = settings.remote_timeout_s
+        base_url = os.environ.get(
+            "FIREWORKS_BASE_URL",
+            "https://api.fireworks.ai/inference/v1",
+        )
+        api_key = os.environ["FIREWORKS_API_KEY"]
+        allowed = os.environ["ALLOWED_MODELS"]
+        self.model = allowed.split(",")[0].strip()
         self._client = AsyncOpenAI(
-            base_url="https://api.fireworks.ai/inference/v1",
-            api_key=settings.fireworks_api_key,
+            base_url=base_url,
+            api_key=api_key,
         )
     
     async def generate(self, prompt: str, **kwargs) -> LLMResponse:

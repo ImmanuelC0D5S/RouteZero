@@ -23,5 +23,8 @@ streamlit>=1.30.0
 # Async SQLite
 aiosqlite>=0.20.0
 
+# Local model (llama.cpp CPU)
+llama-cpp-python>=0.2.0
+
 # Utilities
 numpy>=1.24.0

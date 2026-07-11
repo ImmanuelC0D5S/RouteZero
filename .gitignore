@@ -34,3 +34,20 @@ htmlcov/
 
 # ── Docker ───────────────────────────────────────────────────────────────
 .docker/
+
+# ── Generated / Metadata ─────────────────────────────────────────────────
+repomix-output.xml
+codebase_tree.txt
+opencode.json
+AGENT.md
+
+# ── Agent / IDE configs ──────────────────────────────────────────────────
+.opencode/
+.agents/
+
+# ── Model files (too large for git) ──────────────────────────────────────
+models/
+*.gguf
+
+# ── Markdown docs ────────────────────────────────────────────────────────
+*.md

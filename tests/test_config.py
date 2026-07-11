@@ -7,8 +7,8 @@ def test_settings_defaults():
     env_keys = [
         "CACHE_SIMILARITY_THRESHOLD", "CHROMADB_PATH", "EMBEDDING_MODEL",
         "ROUTER_LOCAL_THRESHOLD", "ROUTER_HEURISTIC_WEIGHT",
-        "LOCAL_MODEL_NAME", "LOCAL_MODEL_ENDPOINT", "LOCAL_MAX_TOKENS",
-        "FIREWORKS_API_KEY", "FIREWORKS_MODEL_ID",
+        "LOCAL_MODEL_PATH", "LOCAL_MAX_TOKENS",
+        "FIREWORKS_API_KEY", "FIREWORKS_BASE_URL",
         "HF_TOKEN",
     ]
     saved = {k: os.environ.pop(k, None) for k in env_keys}
@@ -19,8 +19,8 @@ def test_settings_defaults():
         assert settings.embedding_model == "all-MiniLM-L6-v2"
         assert settings.router_local_threshold == 0.4
         assert settings.router_heuristic_weight == 0.3
-        assert settings.local_model_name == "Qwen/Qwen3-30B-A3B"
-        assert settings.fireworks_model_id == "accounts/fireworks/models/llama-v3p1-405b-instruct"
+        assert settings.local_model_path == "/app/models/Qwen2.5-1.5B-Instruct-Q4_K_M.gguf"
+        assert settings.fireworks_base_url == "https://api.fireworks.ai/inference/v1"
         assert settings.local_max_tokens == 1024
     finally:
         for k, v in saved.items():

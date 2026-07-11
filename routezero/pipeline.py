@@ -126,6 +126,8 @@ class RouteZeroPipeline:
         return {
             "model_response": response.text,
             "execution_latency_ms": latency,
+            "tokens_used": response.tokens_used,
+            "model_name": response.model_name,
         }
     
     async def _node_call_remote(self, state: PipelineState) -> dict:
@@ -136,6 +138,8 @@ class RouteZeroPipeline:
             "model_response": response.text,
             "execution_latency_ms": latency,
             "routing_target": "remote",
+            "tokens_used": response.tokens_used,
+            "model_name": response.model_name,
         }
     
     async def _node_verify(self, state: PipelineState) -> dict:
@@ -205,6 +209,8 @@ class RouteZeroPipeline:
             "model_response": "",
             "verification_passed": False,
             "execution_latency_ms": 0.0,
+            "tokens_used": 0,
+            "model_name": "",
             "conversation_id": conversation_id or "",
             "turn_index": 0,
         }
@@ -218,6 +224,8 @@ class RouteZeroPipeline:
             "task_type": final_state.get("task_type", ""),
             "execution_latency_ms": final_state.get("execution_latency_ms", 0.0),
             "total_pipeline_latency_ms": round(total_latency, 2),
+            "tokens_used": final_state.get("tokens_used", 0),
+            "model_name": final_state.get("model_name", ""),
         }
         
         if conversation_id is not None:
