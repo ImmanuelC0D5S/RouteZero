@@ -1,0 +1,7 @@
+sentence-transformers
+openai
+python-dotenv
+scikit-learn
+numpy
+requests
+llama-cpp-python

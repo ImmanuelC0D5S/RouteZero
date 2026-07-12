@@ -1,0 +1,26 @@
+[
+  {
+    "task_id": "t1",
+    "prompt": "What is the capital of Australia?"
+  },
+  {
+    "task_id": "t2",
+    "prompt": "solve for x: 2x+15=35"
+  },
+  {
+    "task_id": "t3",
+    "prompt": "Classify sentiment: I had a wonderful day!"
+  },
+  {
+    "task_id": "t4",
+    "prompt": "Write a Python function that reverses a linked list."
+  },
+  {
+    "task_id": "t5",
+    "prompt": "Find the bug: def get_max(nums): return nums[0]"
+  },
+  {
+    "task_id": "t6",
+    "prompt": "Three friends Sam Jo Lee each own cat dog bird. Sam not bird. Jo owns dog. Who owns cat?"
+  }
+]
