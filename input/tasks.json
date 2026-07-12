@@ -1,5 +1,34 @@
 [
-  {"task_id": "001", "prompt": "What is the capital of France?"},
-  {"task_id": "002", "prompt": "Explain what a neural network is in one sentence."},
-  {"task_id": "003", "prompt": "Write a Python function to compute fibonacci numbers."}
+  {
+    "task_id": "FACT-001",
+    "prompt": "What is the capital of Japan and what is its population?"
+  },
+  {
+    "task_id": "MATH-002",
+    "prompt": "Calculate the surface area of a cylinder with a radius of 5cm and a height of 10cm. Show the steps."
+  },
+  {
+    "task_id": "SENT-003",
+    "prompt": "Classify the sentiment of this review: 'The hardware is top-notch, but the software is buggy and crashes every ten minutes.'"
+  },
+  {
+    "task_id": "CODE-004",
+    "prompt": "Write a Python script that uses BeautifulSoup to scrape all the links from 'https://example.com'."
+  },
+  {
+    "task_id": "SUMM-005",
+    "prompt": "Summarize this in two sentences: Quantum entanglement is a physical phenomenon that occurs when a group of particles are generated, interact, or share spatial proximity in a way such that the quantum state of each particle of the group cannot be described independently of the state of the others, including when the particles are separated by a large distance."
+  },
+  {
+    "task_id": "LOGIC-006",
+    "prompt": "Sally has 3 brothers. Each of her brothers has 2 sisters. How many sisters does Sally have?"
+  },
+  {
+    "task_id": "NER-007",
+    "prompt": "Extract the names of people and companies from this text: 'Steve Jobs founded Apple in a garage with Steve Wozniak in Cupertino.'"
+  },
+  {
+    "task_id": "DEBUG-008",
+    "prompt": "Find the bug in this code: for i in range(10): if i = 5: print('Found it!')"
+  }
 ]

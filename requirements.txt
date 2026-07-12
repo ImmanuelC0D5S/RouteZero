@@ -4,3 +4,4 @@ python-dotenv
 scikit-learn
 numpy
 requests
+llama-cpp-python
