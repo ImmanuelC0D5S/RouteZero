@@ -5,3 +5,5 @@ scikit-learn
 numpy
 requests
 llama-cpp-python
+uvicorn>=0.20.0
+fastapi>=0.100.0
